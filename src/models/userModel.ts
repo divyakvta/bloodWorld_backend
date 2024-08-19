@@ -3,11 +3,18 @@ import { Schema, model, Document } from 'mongoose';
 //  Define interface
 interface IUser extends Document {
   name: string;
+  age: number;
   email: string;
+  city: string;
+  district: string;
+  bloodGroup: string;
   password: string;
-  otp: string | number;
-  phone: number;
+  phone: string;
+  role: string;
+  lastDonated: string;
+  otp: string;
   verified: boolean;
+  isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -16,22 +23,62 @@ interface IUser extends Document {
 
 const userSchema = new Schema<IUser>(
   {
-    name: {
-      type: String,
-      required: [true, "Name is required"]
+    name: { 
+      type: String, 
+      required: true 
+    },
+    age: { 
+      type: Number, 
+      required: true 
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
-      unique: true,
-      uniqueCaseInsensitive: true 
+      required: true
     },
-    phone:{
-     type: Number,
+    city: { 
+      type: String, 
+      required: true
+     },
+    district: { 
+      type: String, 
+      required: true,
+      enum: [
+        'Alappuzha', 
+        'Ernakulam', 
+        'Idukki', 
+        'Kannur', 
+        'Kasaragod', 
+        'Kollam', 
+        'Kottayam', 
+        'Kozhikode', 
+        'Malappuram', 
+        'Palakkad', 
+        'Pathanamthitta', 
+        'Thiruvananthapuram', 
+        'Thrissur', 
+        'Wayanad'
+    ] 
     },
-    password: {
+    bloodGroup: { 
+      type: String, 
+      required: true,
+      enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] 
+    },
+    password: { 
+      type: String, 
+      required: true 
+    },
+    phone: { 
+      type: String, 
+      required: true 
+    },
+    role: { 
+      type: String, 
+      enum: ['Donor', 'Recipient'], 
+      required: true 
+    },
+    lastDonated: {
       type: String,
-      required: [true, "Password is required"]
     },
     otp: {
       type: String,
@@ -40,6 +87,10 @@ const userSchema = new Schema<IUser>(
   verified: {
     type: Boolean,
     default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
   },
   {
