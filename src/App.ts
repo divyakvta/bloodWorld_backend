@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectDB from './config/db';
-import userRoutes from './routes/userRoutes'
+import userRoutes from './routes/userRoutes';
+import adminRoutes from './routes/adminRoutes';
 import { errorHandler, notFound } from './middleware/errorMiddleware';
 
 
@@ -38,6 +39,7 @@ class App {
 
     private initializeRoutes(): void {
         this.app.use('/api/users', userRoutes );
+        this.app.use('/api/admin', adminRoutes );
         this.app.get('/', (req: Request, res: Response) => res.send('Server is Ready'));
     }
 

@@ -1,4 +1,6 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, CallbackError } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken'
 
 //  Define interface
 interface IUser extends Document {
@@ -9,7 +11,7 @@ interface IUser extends Document {
   district: string;
   bloodGroup: string;
   password: string;
-  phone: string;
+  phone?: string;
   role: string;
   lastDonated: string;
   otp: string;
@@ -17,6 +19,9 @@ interface IUser extends Document {
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  isPasswordCorrect(password: string): Promise<boolean>;
+  generateAccessToken(): string;
+  generateRefreshToken(): string;
 }
 
 // Create a schema corresponding to the document interface.
@@ -33,7 +38,8 @@ const userSchema = new Schema<IUser>(
     },
     email: {
       type: String,
-      required: true
+      required: true,
+      unique: true
     },
     city: { 
       type: String, 
@@ -66,7 +72,7 @@ const userSchema = new Schema<IUser>(
     },
     password: { 
       type: String, 
-      required: true 
+      required: false 
     },
     phone: { 
       type: String, 
@@ -97,6 +103,45 @@ const userSchema = new Schema<IUser>(
     timestamps: true
   }
 );
+
+
+userSchema.pre<IUser>("save", async function (next) {
+
+  if(!this.isModified('password')) return next()
+
+    try {
+      this.password = await bcrypt.hash(this.password, 10);
+      next();
+    } catch (err) {
+      next(err as CallbackError);
+    }
+})
+
+userSchema.methods.isPasswprdCorrect = async function(password: string): Promise<boolean> {
+return await bcrypt.compare(password, this.password)
+}
+
+
+userSchema.methods.generateAccessToken = function (): string {
+  return jwt.sign(
+     {
+       _id: this._id,
+       email: this.email,
+     },
+     process.env.JWT_SECRET as string,
+     { expiresIn: "1h" }
+   );
+ };
+ 
+ userSchema.methods.generateRefreshToken = function (): string {
+  return jwt.sign(
+     {
+       _id: this._id,
+     },
+     process.env.JWTREFRESH_SECRET as string,
+     { expiresIn: "10d" }
+   );
+ };
 
 
 
