@@ -117,7 +117,7 @@ userSchema.pre<IUser>("save", async function (next) {
     }
 })
 
-userSchema.methods.isPasswprdCorrect = async function(password: string): Promise<boolean> {
+userSchema.methods.isPasswordCorrect = async function(password: string): Promise<boolean> {
 return await bcrypt.compare(password, this.password)
 }
 

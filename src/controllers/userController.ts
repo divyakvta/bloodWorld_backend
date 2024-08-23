@@ -52,14 +52,11 @@ class UserController {
         lastDonated,
       });
       const userData = await newUser.save();
-      console.log(userData);
-      const accessToken = newUser.generateAccessToken();
-      const refreshToken = newUser.generateRefreshToken();
+      console.log('Saved user data:',userData);
+      
 
-      res.status(201).json({
+      res.status(201).json({userData,
         message: "Signup successful",
-        userData,
-        tokens: { accessToken, refreshToken },
       });
     } catch (error) {
       console.error("Error saving user:", error);
@@ -72,8 +69,10 @@ class UserController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
+
     try {
-      const id = req.params.id;
+      const id  = req.params.id;
+      console.log("😜" + id)
 
       const updated = await UserModel.findByIdAndUpdate(
         { _id: id },
@@ -103,7 +102,7 @@ class UserController {
   ): Promise<void> {
     try {
       const updated = await UserModel.findOneAndUpdate(
-        { _id: req.body.id },
+        { _id: req.params.id},
         {
           $set: {
             otp: req.body.otp,
@@ -124,7 +123,7 @@ class UserController {
   public async FindUserById(req: Request, res: Response): Promise<void> {
     try {
       const { userId } = req.params;
-      console.log(userId);
+      console.log("UserID:", userId);
 
       if (!mongoose.Types.ObjectId.isValid(userId)) {
         res.status(400).json({ message: "Invalid user ID format" });
@@ -153,14 +152,14 @@ class UserController {
         return;
       }
 
-      const accessToken = user.generateAccessToken(); // No arguments
-      const refreshToken = user.generateRefreshToken(); // No arguments
+      const accessToken = user.generateAccessToken();
+      const refreshToken = user.generateRefreshToken(); 
 
       res.cookie('refreshTokenUser', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Set to true in production
+        secure: process.env.NODE_ENV === 'production', 
         sameSite: 'strict',
-        maxAge: 10 * 24 * 60 * 60 * 1000 // 10 days
+        maxAge: 10 * 24 * 60 * 60 * 1000 
       });
 
       res.status(200).json({

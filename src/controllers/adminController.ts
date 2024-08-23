@@ -32,12 +32,12 @@ class AdminController {
         httpOnly: true,
         secure: false, // Set to true in production
         sameSite: 'strict',
-        maxAge: 10 * 24 * 60 * 60 * 1000 // 10 days
+        maxAge: 10 * 24 * 60 * 60 * 1000 
       });
 
       console.log(accessToken)
 
-      // Send the access token in the response
+      
       res.send({ accessToken });
     } catch (error) {
       res.status(500).send("Server error");

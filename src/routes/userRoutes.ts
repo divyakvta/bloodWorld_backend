@@ -10,7 +10,7 @@ router.post('/signup', userController.signup);
 router.get('/verify_user/:id', userController.VerifyOtp);
 
 // -------------------------------------------| UPDATE OTP CONFIRMATION CODE TO THE DB |-----------------------------------------------------------------------------------------------------
-router.post('/update_otp', userController.FindUserAndUpdateOtp);
+router.post('/update_otp/:id', userController.FindUserAndUpdateOtp);
 
 // -------------------------------------------| FIND USER BY ID |-----------------------------------------------------------------------------------------------------
 router.get("/get_user/:userId", userController.FindUserById);
