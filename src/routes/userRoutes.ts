@@ -30,6 +30,8 @@ router.post('/update_status/:userId', userController.updateUserStatus)
 
 router.get('/get_users/', userController.FindUsers)
 
-// -------------------------------------------| USER DETAILS UPDATE |-----------------------------------------------------------------------------------------------------
+// -------------------------------------------| SCHEDULE DONATION MESSAGE |--------------------------------------------------------------------------------------------
+
+router.post('/send_message', userController.scheduleDonation)
 
 export default router;

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { UserModel } from "../models/userModel";
 import mongoose from "mongoose";
 import moment from "moment";
+import { SendEmail } from "../twilioService";
 
 //User Signup
 
@@ -93,7 +94,6 @@ class UserController {
       next(error);
     }
   }
-
   //User Login
 
   public async FindUserAndUpdateOtp(
@@ -272,6 +272,30 @@ class UserController {
       console.log(error);
     }
   }
+
+  public scheduleDonation = async (req: Request, res: Response): Promise<void> => {
+    const { userId, date, requestType }: { userId: string; date: string; requestType: 'normal' | 'urgent' } = req.body;
+      console.log("shedule controller...");
+      console.log(req.body)
+    console.log(userId)
+    try {
+      const acceptUrl = `http://localhost:3000/accept-schedule/${userId}`;
+      const rejectUrl = `http://localhost:3000/reject-schedule/${userId}`;
+
+      const message = `You have a ${requestType} blood donation request scheduled on ${date}. Please confirm:\nAccept: ${acceptUrl}\nReject: ${rejectUrl}`;
+       const userData: any = await UserModel.findOne({_id: userId});
+      const response = await SendEmail(userData.email, message);
+    
+      if(response.success){
+        res.json({ success: true });
+      }else{
+        res.json({ success: false });
+      }
+   
+    }catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  };
 }
 
 export default UserController;
