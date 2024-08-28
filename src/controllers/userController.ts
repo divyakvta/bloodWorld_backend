@@ -4,6 +4,7 @@ import { UserModel } from "../models/userModel";
 import mongoose from "mongoose";
 import moment from "moment";
 import { SendEmail } from "../twilioService";
+import { Message } from "twilio/lib/twiml/MessagingResponse";
 
 //User Signup
 
@@ -274,15 +275,14 @@ class UserController {
   }
 
   public scheduleDonation = async (req: Request, res: Response): Promise<void> => {
-    const { userId, date, requestType }: { userId: string; date: string; requestType: 'normal' | 'urgent' } = req.body;
+    const { userId, date, requestType, link }: { userId: string; date: string; requestType: 'normal' | 'urgent', link: string } = req.body;
       console.log("shedule controller...");
       console.log(req.body)
     console.log(userId)
     try {
-      const acceptUrl = `http://localhost:3000/accept-schedule/${userId}`;
-      const rejectUrl = `http://localhost:3000/reject-schedule/${userId}`;
+      
 
-      const message = `You have a ${requestType} blood donation request scheduled on ${date}. Please confirm:\nAccept: ${acceptUrl}\nReject: ${rejectUrl}`;
+      const message = `You have a ${requestType} blood donation request scheduled on ${date}. Please confirm:  ${link}`;
        const userData: any = await UserModel.findOne({_id: userId});
       const response = await SendEmail(userData.email, message);
     
@@ -296,6 +296,31 @@ class UserController {
       res.status(500).json({ success: false, error: error.message });
     }
   };
-}
+
+  public handleScheduleResponse = async (req: Request, res: Response): Promise<any> => {
+    const { donerId, recieverId, action, date } = req.body;
+
+    try {
+      const doner = await UserModel.findById(donerId);
+      const reciever = await UserModel.findById(recieverId);
+
+      if(!doner || !reciever) {
+        return res.status(404).json({ success: false, Message: 'User Not found' });
+      }
+      
+      if(action === 'accept') {
+        doner.nextDonation = date;
+        await doner.save()
+        res.status(200).json({ message: 'User accepted the request', success: true })
+      }else {
+        res.status(400).json( {message: 'User rejected the request', success: false})
+      }
+     
+    }catch (error: any) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  }
+
+ }
 
 export default UserController;

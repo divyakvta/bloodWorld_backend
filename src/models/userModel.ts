@@ -14,6 +14,7 @@ interface IUser extends Document {
   phone?: string;
   role: string;
   lastDonated: string;
+  nextDonation: Date;
   otp: string;
   verified: boolean;
   isActive: boolean;
@@ -82,6 +83,9 @@ const userSchema = new Schema<IUser>(
       type: String, 
       enum: ['Donor', 'Recipient'], 
       required: true 
+    },
+    nextDonation: {
+      type: Date,
     },
     lastDonated: {
       type: String,

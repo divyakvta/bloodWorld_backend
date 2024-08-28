@@ -32,6 +32,10 @@ router.get('/get_users/', userController.FindUsers)
 
 // -------------------------------------------| SCHEDULE DONATION MESSAGE |--------------------------------------------------------------------------------------------
 
-router.post('/send_message', userController.scheduleDonation)
+router.post('/send_message', userController.scheduleDonation);
+
+// -------------------------------------------| MANAGE SCHEDULE RESPONSE |--------------------------------------------------------------------------------------------
+
+router.post('/schedule-response', userController.handleScheduleResponse)
 
 export default router;

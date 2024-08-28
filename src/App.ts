@@ -6,7 +6,7 @@ import connectDB from './config/db';
 import userRoutes from './routes/userRoutes';
 import adminRoutes from './routes/adminRoutes';
 import { errorHandler, notFound } from './middleware/errorMiddleware';
-
+import './tasks/donationScheduler'
 
 dotenv.config();
 
